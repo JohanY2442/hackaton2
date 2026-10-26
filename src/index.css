@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sea-950: #06121f;
+  --color-sea-900: #0b1f33;
+  --color-sea-800: #12304d;
+  --color-sea-700: #1b4469;
+  --color-sand-100: #f6ecd4;
+  --color-sand-300: #e3cf9f;
+  --color-gold-400: #f2b84b;
+  --color-blood-500: #c0392b;
+}
+
+html, body, #root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-sea-950);
+  color: var(--color-sand-100);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ===== Cartel "Se Busca" ===== */
+.wanted-poster {
+  background:
+    radial-gradient(circle at 20% 10%, rgb(0 0 0 / 0.06), transparent 40%),
+    linear-gradient(#f3e3bd, #e6cf98);
+  color: #3b2a14;
+}
+
+/* ===== CP5: barra de progreso con scroll-driven animations ===== */
+@keyframes grow-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes reveal-stage {
+  from { opacity: 0.25; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Fallback: sin soporte, el ancho lo controla JS (variable --progress) */
+.story-progress {
+  transform-origin: 0 50%;
+  transform: scaleX(var(--progress, 0));
+}
+
+.stage-card {
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+@supports (animation-timeline: scroll()) {
+  .story-progress {
+    transform: none;
+    animation: grow-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+  .stage-card {
+    animation: reveal-stage linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
+  }
+}
+
+.ship-marker {
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.route-path {
+  transition: stroke-dashoffset 600ms ease;
+}
+
+/* ===== View Transitions (resumen <-> historia) ===== */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 350ms;
+}
+
+/* ===== Reduced motion: todo se entiende sin animaciones ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .story-progress { transform: scaleX(var(--progress, 0)); }
+  .stage-card { opacity: 1 !important; transform: none !important; }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
